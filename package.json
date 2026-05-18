@@ -1,0 +1,19 @@
+{
+  "name": "todo-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@launchdarkly/js-client-sdk": "^4.6.5",
+    "@launchdarkly/observability": "^1.1.9",
+    "@launchdarkly/session-replay": "^1.1.9",
+    "webpack": "^5.106.2",
+    "webpack-cli": "^7.0.2"
+  }
+}

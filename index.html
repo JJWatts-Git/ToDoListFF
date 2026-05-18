@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Tasks</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Georgia, serif;
+      background: #F1EFE8;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      color: #2C2C2A;
+    }
+
+    .app {
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header { margin-bottom: 2rem; }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-icon {
+      width: 30px; height: 30px;
+      background: #EEEDFE;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .header p { font-size: 14px; color: #888780; margin-top: 5px; }
+
+    /* Add form */
+    .add-form {
+      background: #fff;
+      border: 0.5px solid #D3D1C7;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .form-row { display: flex; gap: 8px; }
+
+    input[type="text"],
+    input[type="date"],
+    select {
+      height: 36px;
+      padding: 0 12px;
+      border: 0.5px solid #D3D1C7;
+      border-radius: 8px;
+      background: #F1EFE8;
+      color: #2C2C2A;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    select:focus { border-color: #AFA9EC; }
+    input[type="text"] { flex: 1; }
+    input[type="date"] { flex: 1; }
+    select { padding: 0 8px; cursor: pointer; }
+
+    .date-row { display: flex; gap: 8px; align-items: center; }
+    .cal-icon { color: #888780; flex-shrink: 0; }
+
+    .add-btn {
+      height: 36px;
+      padding: 0 18px;
+      background: #534AB7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .add-btn:hover { background: #3C3489; }
+    .add-btn:active { transform: scale(0.98); }
+
+    /* Filters */
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-btn {
+      height: 30px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 0.5px solid #D3D1C7;
+      background: transparent;
+      color: #888780;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: capitalize;
+    }
+    .filter-btn:hover { border-color: #B4B2A9; color: #2C2C2A; }
+    .filter-btn.active {
+      background: #EEEDFE;
+      border-color: #AFA9EC;
+      color: #3C3489;
+      font-weight: 500;
+    }
+    .task-count { margin-left: auto; font-size: 13px; color: #B4B2A9; }
+
+    /* Task list */
+    .task-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #B4B2A9;
+      font-size: 14px;
+    }
+    .empty-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.4; }
+
+    /* Task card */
+    .task-item {
+      background: #fff;
+      border: 0.5px solid #D3D1C7;
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: border-color 0.15s, opacity 0.2s;
+    }
+    .task-item:hover { border-color: #B4B2A9; }
+    .task-item.completed { opacity: 0.55; }
+    .task-item.completed .task-title { text-decoration: line-through; color: #888780; }
+
+    /* Checkbox */
+    .checkbox {
+      width: 20px; height: 20px;
+      border-radius: 6px;
+      border: 1.5px solid #B4B2A9;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      transition: all 0.15s;
+      padding: 0;
+    }
+    .checkbox:hover { border-color: #534AB7; }
+    .checkbox.checked { background: #534AB7; border-color: #534AB7; }
+    .checkbox svg { display: none; }
+    .checkbox.checked svg { display: block; }
+
+    /* Task body */
+    .task-body { flex: 1; min-width: 0; }
+    .task-title { font-size: 14px; font-weight: 500; margin-bottom: 5px; word-break: break-word; }
+    .task-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .badge-overdue  { color: #A32D2D; background: #FCEBEB; }
+    .badge-today    { color: #3B6D11; background: #EAF3DE; }
+    .badge-soon     { color: #633806; background: #FAEEDA; }
+    .badge-future   { color: #185FA5; background: #E6F1FB; }
+    .badge-none     { color: #888780; background: #F1EFE8; }
+    .badge-p-high   { color: #A32D2D; background: #FCEBEB; }
+    .badge-p-medium { color: #633806; background: #FAEEDA; }
+    .badge-p-low    { color: #185FA5; background: #E6F1FB; }
+
+    /* Cat fact toast */
+    .cat-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #fff;
+      border: 0.5px solid #D3D1C7;
+      border-radius: 14px;
+      padding: 14px 18px;
+      max-width: 420px;
+      width: calc(100% - 3rem);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .cat-toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+    .cat-toast-emoji { font-size: 22px; flex-shrink: 0; line-height: 1.3; }
+    .cat-toast-body { flex: 1; min-width: 0; }
+    .cat-toast-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #534AB7;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .cat-toast-text { font-size: 13px; color: #2C2C2A; line-height: 1.5; }
+    .cat-toast-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #B4B2A9;
+      font-size: 16px;
+      line-height: 1;
+      padding: 0;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .cat-toast-close:hover { color: #2C2C2A; }
+
+    /* Delete button */
+    .delete-btn {
+      width: 28px; height: 28px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #B4B2A9;
+      flex-shrink: 0;
+      transition: all 0.15s;
+      padding: 0;
+    }
+    .delete-btn:hover { background: #FCEBEB; color: #A32D2D; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <h1>
+        <span class="header-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7l3.5 3.5L12 3" stroke="#534AB7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        My tasks
+      </h1>
+      <p>Keep track of what needs to get done</p>
+    </div>
+
+    <div class="add-form">
+      <div class="form-row">
+        <input type="text" id="taskInput" placeholder="Add a new task..." />
+        <select id="prioritySelect">
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div class="date-row">
+        <svg class="cal-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="1.5" y="2.5" width="13" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M5 1v3M11 1v3M1.5 6.5h13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <input type="date" id="dateInput" />
+        <button class="add-btn" id="addBtn">+ Add task</button>
+      </div>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="active">Active</button>
+      <button class="filter-btn" data-filter="completed">Completed</button>
+      <button class="filter-btn" data-filter="overdue">Overdue</button>
+      <span class="task-count" id="taskCount"></span>
+    </div>
+
+    <div class="task-list" id="taskList"></div>
+  </div>
+
+  <!-- Cat fact toast -->
+  <div class="cat-toast" id="catToast" role="status" aria-live="polite">
+    <span class="cat-toast-emoji">=1</span>
+    <div class="cat-toast-body">
+      <div class="cat-toast-label">Cat fact</div>
+      <div class="cat-toast-text" id="catToastText"><span class="cat-toast-loading">Fetching a fact&</span></div>
+    </div>
+    <button class="cat-toast-close" id="catToastClose" aria-label="Dismiss"></button>
+  </div>
+
+  <!-- Webpack bundle -->
+  <script src="dist/bundle.js"></script>
+</body>
+</html>
