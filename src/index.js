@@ -8,19 +8,45 @@ async function init() {
   // other entities. You'll need this later, but you can ignore it for now.
   const context = {
     kind: 'user',
-    key: 'EXAMPLE_CONTEXT_KEY',
+
+    key: '80211',
     name: 'Jordan',
-    email: 'Jordan@watts.com'
+    email: 'Jordan@watts.com',
+    custom: {
+      tier: 'enterprise',
+      boldlyGoWhereNoManHasGoneBeforeLevel: 'Capt Kirk'
+    }
+
+/*    
+    key: '12345',
+    name: 'Terry',
+    email: 'Terry@scaredycat.com',
+    custom: {
+      tier: 'basic',
+      boldlyGoWhereNoManHasGoneBeforeLevel: 'civilian'
+    }
+*/    
+/*
+    key: '80223',
+    name: 'Bayleigh',
+    email: 'Bayleigh@watts.com',
+    custom: {
+      tier: 'enterprise',
+      boldlyGoWhereNoManHasGoneBeforeLevel: 'Spock'
+    }
+*/
   };
   // This is your client-side ID.
+  // HEY YOU, YEAH YOU! CHANGE THE FIRST PARAMETER BELOW WITH YOUR KEY
   const LDClient = createClient('6a0265602540fe0a7fe4af07', context);
   LDClient.start();
   
 
   LDClient.on('initialized', function () {
     console.log('SDK successfully initialized!');
+    //shows initial flag value
     const flagValue = LDClient.variation('MyFirstFlag', false);
-    console.log("Our first feature flag is: " + flagValue);
+    console.log("Our first feature flag is currently: " + flagValue);
   });
   
 
@@ -241,6 +267,12 @@ async function init() {
     document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     render();
+  });
+
+  //LD flag listener
+  LDClient.on('change:MyFirstFlag', (context) => {
+    const flagValue = LDClient.variation('MyFirstFlag', false);
+    //console.log('flag is now: ', flagValue);
   });
 
   // ── Start ────────────────────────────────────────────────────────────
