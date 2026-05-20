@@ -12,6 +12,7 @@ The app is already compiled. In order to run the app. Navigate to the app direct
 A couple things to note.
 1. The only code that will need to be changed will be in the /src/index.js file to put in your environment variables.
   1- Lines 11-37 is the contexts. If you want to try the custom rules and see how different users fit, you can comment out and use different users. The screenshot below shows my LD UI configuration for the feture flag.
+ 
    <img width="569" height="460" alt="image" src="https://github.com/user-attachments/assets/5421421f-dd42-451a-85be-59544aa771f7" />
   2- Line 41 is where your client key needs to be put in.
   3- Lines 48, 179, 273, and 274 are where you would put in your flag key, assuming the key name is different.
